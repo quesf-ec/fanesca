@@ -33,8 +33,8 @@ export function token(nombre, respaldo) {
    cambia porque cambie la marca. */
 export const COMIDA = {
   /* choclo tierno: amarillo pálido con brillo */
-  choclo_tierno: ['#f8d267', '#f6c94b', '#fae09a', '#f3c352', '#fbe084'],
-  choclo_tierno_punta: '#fbe9b4',
+  choclo_tierno: ['#fad65e', '#f9d052', '#fbdb6c', '#f8cc4c', '#fbd864'],
+  choclo_tierno_punta: '#fbdc74',
   choclo_tierno_tusa: '#f8efd6',
   /* choclo duro: más anaranjado y mate */
   choclo_duro: ['#eaa92e', '#e09d24', '#efb84a', '#d99a20', '#f0c25e'],
@@ -46,8 +46,13 @@ export const COMIDA = {
   choclo_seco_punta: '#f2ead4',
   choclo_seco_tusa: '#e2d5b4',
   choclo_papilla: '#eedda0',
-  hoja_choclo: ['#7fa851', '#6f9c47', '#8bb15f'],
-  pelo_choclo: ['#d9b06a', '#c59a55'],
+  choclo_podrido: '#6b4423',
+  hoja_choclo: ['#86b955', '#79ad4b', '#92c362'],
+  /* la hoja tierna, la de más adentro: verde limón */
+  hoja_choclo_tierna: ['#a3cb6c', '#aed478'],
+  hoja_choclo_borde: '#ecf8c4',
+  /* rubio: la punta tostada la pone el propio pelo, por vértice */
+  pelo_choclo: ['#f0d38c', '#e6c276'],
 
   /* habas: la vaina verde y el haba pálida */
   vaina_haba: '#80b055',
@@ -77,6 +82,12 @@ export const COMIDA = {
   hilo_arveja: '#4e8a33',
   arveja: '#a6cc55',
   arveja_cicatriz: '#dfeab4',
+  /* la arveja suavita: luz de borde, forro que verdea y un hilo menos duro */
+  vaina_arveja_borde: '#e6f7b8',
+  vaina_arveja_filo: '#a9d27a',
+  hilo_arveja_suave: '#5e9c3c',
+  arveja_sombra: '#84b23e',
+  arveja_borde: '#f0fbc8',
 
   /* chochos: piel translúcida, pepa amarilla */
   chocho_piel: '#efe7cd',

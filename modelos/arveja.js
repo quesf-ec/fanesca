@@ -23,6 +23,9 @@
 import { registrar } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { abollar, curvar, entubar, formaVariada, forma } from './organico.js';
+import { pintar, aterciopelado, mediaCascara, bultosEnFila } from './pintura.js';
+
+const acotar = (v) => Math.max(-1, Math.min(1, v));
 
 export const POR_VAINA = 5;
 export const PASO_ARVEJA = 0.148;
@@ -125,29 +128,55 @@ export function perfilVaina(x) {
    arveja es casi un tubo partido, y esa sección redonda es lo que
    hace que los granos rueden hacia afuera solos cuando se abre. */
 function mediaVaina(THREE, arriba) {
-  const geo = forma('media-vaina-arveja:' + (arriba ? 'a' : 'b'), () =>
-    curvar(
-      entubar(
-        abollar(
-          new THREE.SphereGeometry(1, 22, 12, 0, Math.PI * 2, arriba ? 0 : Math.PI / 2, Math.PI / 2),
-          { fuerza: 0.03, escala: 3.8, semilla: arriba ? 11 : 12 },
-        ),
-        { eje: 'x', perfil: PERFIL },
-      ),
-      /* la vaina de arveja se arquea: nunca está recta sobre la mesa */
-      { eje: 'x', hacia: 'z', k: VAINA.arco },
-    ));
-  const m = new THREE.Mesh(geo, mate(THREE, COMIDA.vaina_arveja));
+  /* LA MISMA RECETA QUE LA VAINA DE HABA: anillos densos a lo largo
+     (mediaCascara), los granos marcados DESDE DENTRO de la cáscara
+     (bultosEnFila) y la piel pintada por vértice. Antes los bultos
+     eran cinco bolas pegadas encima de un casco liso de un solo
+     verde, y la vaina se leía como un bloque con remaches. */
+  const clave = 'media-vaina-arveja6:' + (arriba ? 'a' : 'b');
+  const hacer = (conBultos) => () => {
+    const g = mediaCascara(THREE, { arriba, segLargo: 36, segSeccion: 12 });
+    abollar(g, { fuerza: 0.022, escala: 3.8, semilla: arriba ? 11 : 12 });
+    entubar(g, { eje: 'x', perfil: PERFIL });
+    if (conBultos) {
+      bultosEnFila(g, {
+        centros: [-2, -1, 0, 1, 2].map(i => i * PASO_ARVEJA / VAINA.largo),
+        sigma: 0.072, alto: 0.4,
+        /* gordos en el lomo y nada en el filo: la costura sigue recta */
+        peso: (x, y, z) => Math.pow(Math.max(0, Math.min(1, y)), 1.2) * Math.exp(-z * z / 0.5),
+      });
+    }
+    /* la vaina de arveja se arquea: nunca está recta sobre la mesa */
+    return curvar(g, { eje: 'x', hacia: 'z', k: VAINA.arco });
+  };
+  const base = forma(clave, hacer(arriba));
+  /* el forro va SIN bultos: escalado al 95 % de una cáscara con
+     bultos asomaba en astillas claras por los valles entre grano y
+     grano. Liso, queda siempre por dentro. */
+  const baseForro = arriba ? forma(clave + ':lisa', hacer(false)) : base;
+  /* la piel: el lomo y las panzas de los granos más claros, el canto y
+     los valles entre grano y grano un pelo más hondos */
+  const geoC = forma(clave + ':casc', () => pintar(THREE, base.clone(), (c, i, x, y, z) => {
+    const yc = Math.abs(acotar(y));
+    /* cada grano con su lucecita y el valle entre dos un pelo más
+       hondo: así se CUENTAN desde fuera, que es media gracia */
+    let g = 0;
+    if (arriba) for (let j = -2; j <= 2; j++) { const d = x - j * PASO_ARVEJA / VAINA.largo; g += Math.exp(-d * d / (2 * 0.072 * 0.072)); }
+    const lomo = arriba ? Math.pow(Math.max(0, Math.min(1, acotar(y))), 1.2) : 0;
+    const k = 0.84 + 0.14 * Math.min(1.25, yc) + (g - 0.5) * 0.3 * lomo + 0.03 * Math.sin(19 * x + 5 * z);
+    c.setRGB(k * 1.03, k, k * 0.92);
+  }));
+  const m = new THREE.Mesh(geoC, aterciopelado(THREE, COMIDA.vaina_arveja,
+    { vertexColors: true, borde: { color: COMIDA.vaina_arveja_borde, fuerza: 0.24, potencia: 2.2 } }));
   m.scale.set(VAINA.largo, VAINA.alto, VAINA.ancho);
-  /* EL FORRO ES LA MISMA MALLA, UN PELO MÁS CHICA.
-
-     Era una esfera aparte, sin entubar y sin arquear, y ES LA
-     SUPERFICIE QUE SE VE al abrir la vaina: el lecho iba recto
-     mientras los granos seguían el arco de la cáscara, así que hacia
-     las puntas se salían del lecho, y en el centro atravesaban el
-     fondo. Con la misma malla escalada no hay dos formas que puedan
-     dejar de coincidir — es la misma. */
-  const forro = new THREE.Mesh(geo, mate(THREE, COMIDA.vaina_arveja_dentro, { side: THREE.DoubleSide }));
+  /* EL FORRO ES LA MISMA MALLA, UN PELO MÁS CHICA: no hay dos formas
+     que puedan dejar de coincidir. Pálido al fondo y más verde hacia
+     el filo, como el de la haba. */
+  const dentro = new THREE.Color(COMIDA.vaina_arveja_dentro), filo = new THREE.Color(COMIDA.vaina_arveja_filo);
+  const geoF = forma(clave + ':forro', () => pintar(THREE, baseForro.clone(), (c, i, x, y) => {
+    c.copy(dentro).lerp(filo, Math.pow(Math.max(0, 1 - Math.abs(acotar(y))), 2.5));
+  }));
+  const forro = new THREE.Mesh(geoF, mate(THREE, '#ffffff', { vertexColors: true, side: THREE.DoubleSide }));
   forro.scale.setScalar(VAINA.forro);
   forro.name = 'forro';
   forro.userData.ignorar = true;
@@ -180,21 +209,15 @@ registrar('vaina-arveja', (THREE) => {
      verruga suelta. Ahora se posan SOBRE el lomo —su centro en la
      superficie, media bola fuera— y siguen el arco y el afilado como
      los granos que están marcando. */
+  /* Ahora los bultos son parte de la cáscara (ver mediaVaina). Quedan
+     como marcas vacías con su nombre de siempre, porque el nivel las
+     recorre al abrir. */
   for (let i = 0; i < POR_VAINA; i++) {
-    /* 14×9 y no 10×7: los bultos son lo más grande y lo más mirado
-       de la vaina, y con pocas caras se leían como piedras talladas */
-    const b = new THREE.Mesh(forma('bulto-arveja', () => new THREE.SphereGeometry(1, 14, 9)), mate(THREE, COMIDA.vaina_arveja));
+    const b = new THREE.Object3D();
     const x = (i - (POR_VAINA - 1) / 2) * PASO_ARVEJA;
     const c = perfilCascara(x);
-    /* el lomo de la tapa a esa altura; la bisagra está corrida en z,
-       así que el bulto se coloca en coordenadas de la bisagra */
     b.position.set(x, c.alto * 0.86, c.z + 0.085);
-    /* casi tocándose entre ellos —así vienen los granos— y bajos, que
-       son la piel estirada por encima y no bolas pegadas */
-    const r = Math.min(ARVEJA_R.z, c.ancho * 0.78);
-    b.scale.set(Math.min(PASO_ARVEJA * 0.56, r * 1.22), r * 0.5, r * 1.02);
     b.name = 'bulto' + i;
-    b.userData.ignorar = true;
     bisagra.add(b);
   }
   bisagra.add(tapa);
@@ -210,18 +233,30 @@ registrar('vaina-arveja', (THREE) => {
      hacia las puntas y asomaba por los dos extremos como una hoja
      suelta. Se dobla siguiendo el mismo arco y se queda un pelo
      dentro de la vaina, que es donde va un hilo. */
+  /* una cápsula y no un cilindro: las puntas redondas, que el hilo
+     cortado a escuadra era lo más duro de la vaina. Va a lo largo de
+     su Y local (el nivel le escribe scale.y al jalarlo). */
   const hilo = new THREE.Mesh(
-    new THREE.CylinderGeometry(HILO.grosor, HILO.grosor, HILO.largo, 5),
-    mate(THREE, COMIDA.hilo_arveja)
+    forma('hilo-arveja2', () => new THREE.CapsuleGeometry(HILO.grosor * 0.8, HILO.largo - HILO.grosor * 1.6, 3, 8)),
+    mate(THREE, COMIDA.hilo_arveja_suave)
   );
   hilo.rotation.z = Math.PI / 2;
   hilo.position.set(0, HILO.y, HILO.z);
   hilo.name = 'hilo';
   v.add(hilo);
 
-  const rabo = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.017, 0.11, 6), mate(THREE, COMIDA.hilo_arveja));
+  /* el rabito: gordito, curvo y con su gorrito (el cáliz) */
+  const rabo = new THREE.Group();
+  const tallo = new THREE.Mesh(
+    forma('rabo-arveja2', () => curvar(new THREE.CapsuleGeometry(0.014, 0.085, 3, 8, 6), { eje: 'y', hacia: 'z', k: 6 })),
+    mate(THREE, COMIDA.hilo_arveja));
+  const caliz = new THREE.Mesh(
+    forma('caliz-arveja', () => new THREE.SphereGeometry(0.034, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.7, 1)),
+    mate(THREE, COMIDA.hilo_arveja));
+  caliz.position.y = -0.062;
+  rabo.add(tallo, caliz);
   rabo.rotation.z = Math.PI / 2.5;
-  rabo.position.set(-0.45, 0.025, 0.02);
+  rabo.position.set(-0.46, 0.022, 0.012);
   rabo.name = 'rabo';
   v.add(rabo);
 
@@ -233,9 +268,12 @@ registrar('arveja', (THREE, opts = {}) => {
   a.name = 'arveja';
   /* casi esférica, pero no del todo: la arveja se aplana un poco
      donde apretaba contra sus vecinas dentro de la vaina */
-  const geo = formaVariada('arveja', 4, opts.variante || 0, (k) =>
-    abollar(new THREE.SphereGeometry(1, 12, 9), { fuerza: 0.09, escala: 2.8, semilla: k + 21 }));
-  const cuerpo = new THREE.Mesh(geo, mate(THREE, COMIDA.arveja));
+  const sombra = new THREE.Color(COMIDA.arveja_sombra), luz = new THREE.Color(COMIDA.arveja);
+  const geo = formaVariada('arveja2', 4, opts.variante || 0, (k) => pintar(THREE,
+    abollar(new THREE.SphereGeometry(1, 16, 11), { fuerza: 0.05, escala: 2.2, semilla: k + 21 }),
+    (c, i, x, y, z, nx, ny) => { c.copy(sombra).lerp(luz, Math.pow(Math.max(0, Math.min(1, ny * 0.5 + 0.62)), 1.2)); }));
+  const cuerpo = new THREE.Mesh(geo, aterciopelado(THREE, '#ffffff',
+    { vertexColors: true, borde: { color: COMIDA.arveja_borde, fuerza: 0.3, potencia: 2.2 } }));
   cuerpo.scale.set(ARVEJA_R.x, ARVEJA_R.y, ARVEJA_R.z);
   cuerpo.name = 'cuerpo';
   /* la cicatriz: el puntito claro por donde iba pegada a la vaina */

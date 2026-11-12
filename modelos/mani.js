@@ -24,7 +24,7 @@
 import { registrar } from './registro.js';
 import { COMIDA, mate, brillante } from './paleta.js';
 import { abollar, achatar, entubar, forma, formaVariada } from './organico.js';
-import { pintar, lienzo, sstep, ruido3, azarCon } from './pintura.js';
+import { pintar, lienzo, sstep, ruido3, azarCon, suavito } from './pintura.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
    Viven aquí mientras tanto para no pisar a quien edita la paleta. */
@@ -215,14 +215,14 @@ registrar('mano-piedra', (THREE) => {
 registrar('mani', (THREE, opts = {}) => {
   const g = new THREE.Group();
   g.name = 'mani';
-  const geo = formaVariada('mani-grano', 4, opts.variante || 0, (k) => {
+  const geo = formaVariada('mani-grano2', 4, opts.variante || 0, (k) => {
     const m = abollar(
       entubar(new THREE.SphereGeometry(1, 18, 12), {
         eje: 'z',
         /* la cintura entre los dos cotiledones, honda (−25%) */
         perfil: (u) => Math.sqrt(Math.max(0, 1 - u * u)) * (1 - 0.25 * Math.exp(-((u / 0.22) ** 2))),
       }),
-      { fuerza: 0.05, escala: 2.6, semilla: k + 41 });
+      { fuerza: 0.035, escala: 2.6, semilla: k + 41 });
     const piel = new THREE.Color(COLORES.mani_piel), grano = new THREE.Color(COMIDA.mani);
     /* el umbral del descascarado cambia por variante: de un 15% a un
        40% de grano a la vista. Igual en todos (0.32) parecía tocino;
@@ -236,7 +236,7 @@ registrar('mani', (THREE, opts = {}) => {
       if (z / r > 0.93) c.lerp(grano, 0.8);             /* el germen en la punta */
     });
   });
-  const m = new THREE.Mesh(geo, mate(THREE, '#ffffff', { vertexColors: true }));
+  const m = new THREE.Mesh(geo, suavito(mate(THREE, '#ffffff', { vertexColors: true }), { color: '#ffd9b8', fuerza: 0.28 }));
   m.scale.set(0.05, 0.046, 0.085);
   m.name = 'grano';
   g.add(m);

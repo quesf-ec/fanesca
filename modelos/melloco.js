@@ -21,7 +21,7 @@
 import { registrar } from './registro.js';
 import { COMIDA } from './paleta.js';
 import { abollar, curvar, forma, formaVariada } from './organico.js';
-import { pintar, sstep, ruido3 } from './pintura.js';
+import { pintar, sstep, ruido3, suavito } from './pintura.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
    Viven aquí mientras tanto para no pisar a quien edita la paleta. */
@@ -40,7 +40,7 @@ const COLORES = {
    hundidas, que es lo que lo hace tubérculo y no caramelo. */
 function geoMelloco(THREE, k) {
   const g = curvar(
-    abollar(new THREE.SphereGeometry(1, 22, 14), { fuerza: 0.08, escala: 2.1, semilla: k + 31 }),
+    abollar(new THREE.SphereGeometry(1, 22, 14), { fuerza: 0.055, escala: 2.1, semilla: k + 31 }),
     { eje: 'x', hacia: 'z', k: 0.16 },
   );
   const pos = g.attributes.position;
@@ -88,14 +88,15 @@ registrar('melloco', (THREE, opts = {}) => {
   g.name = 'melloco';
   const k = ((opts.variante || 0) % 5 + 5) % 5;
 
-  const geo = forma('melloco-piel:' + k, () => pintarMelloco(THREE, geoMelloco(THREE, k), k));
+  const geo = forma('melloco-piel2:' + k, () => pintarMelloco(THREE, geoMelloco(THREE, k), k));
   /* material por melloco: el nivel le cambia el color (el velo) al
      limpiarlo. Phong de brillo bajo y especular oscuro: cera, no
      plástico */
-  const cuerpo = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+  const cuerpo = new THREE.Mesh(geo, suavito(new THREE.MeshPhongMaterial({
     color: COLORES.melloco_velo, vertexColors: true, shininess: 30, specular: COLORES.melloco_brillo,
-  }));
-  cuerpo.scale.set(0.15, 0.1, 0.105);
+  }), { color: '#fff0c0', fuerza: 0.22 }));
+  /* más gordito: de riñón flaco a papita */
+  cuerpo.scale.set(0.15, 0.108, 0.112);
   cuerpo.name = 'cuerpo';
   g.add(cuerpo);
 
@@ -117,10 +118,10 @@ registrar('melloco', (THREE, opts = {}) => {
      bollos y las yemas, así que no hay anillo blanco alrededor (una
      esfera lisa se leía como cápsula, no como piel mojada). */
   const babaza = new THREE.Mesh(
-    forma('melloco-babaza:' + k, () => {
+    forma('melloco-babaza2:' + k, () => {
       const b = geo.clone();
       b.deleteAttribute('color');
-      b.scale(0.15 * 1.08, 0.1 * 1.11, 0.105 * 1.08);
+      b.scale(0.15 * 1.08, 0.108 * 1.11, 0.112 * 1.08);
       return b;
     }),
     new THREE.MeshPhongMaterial({ color: COMIDA.melloco_babaza, specular: '#ffffff', shininess: 70,

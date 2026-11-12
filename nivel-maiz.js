@@ -160,7 +160,7 @@ function nuevoGrano(a, p) {
 
   const g = api.pieza(danado ? 'grano-podrido' : 'grano-choclo', {
     madurez: danado ? 'podrido' : madurez.id,
-    punta,
+    punta, a, p,
     variante: a * 7 + p * 3,
   });
   /* apenas asomados: el grano se sienta EN la tusa, no flota sobre ella */

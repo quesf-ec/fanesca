@@ -30,10 +30,31 @@
    no le pasó a él.
    ============================================================ */
 
-const APP_VERSION = '4.8.1';
+const APP_VERSION = '4.9.0';
 
 /* la más reciente primero */
 const NOVEDADES = [
+  {
+    v: '4.9.0',
+    fecha: '2026-11-12',
+    titulo: 'El choclo nuevo y la despensa más clara',
+    cambios: [
+      '🌽 <b>El choclo es otro.</b> Ya no es un tubo: tiene panza abajo y punta fina, granos redonditos, hojas con sus venas que cierran en un cuello, y un mechón de pelos rubios en vez de palillos. Pelado, la tusa enseña el hoyito de cada grano.',
+      '🧺 <b>En la feria</b> los choclos se reconocen de lejos y el mechón ya sale de la punta, no flotando al lado.',
+      '🫛 <b>Todo más suavito.</b> La arveja y los chochos se rehicieron con la mano de las habas, y al fréjol, el melloco, la lenteja, el maní, el mote, el garbanzo y los bichos se les suavizó el canto.',
+      '🗂 <b>La despensa se lee de un vistazo:</b> fichas más grandes, un aro verde que dice cuánto llevas de cada bolsa, «completa» con su visto, y sólo la bolsa que toca dice «empieza aquí».',
+      '📋 <b>Dentro de cada bolsa</b> los niveles van numerados y el que sigue está marcado en oro.',
+      '👆 <b>En el mesón</b> la pista y los botones de girar son más limpios y estorban menos.',
+    ],
+    internos: [
+      'modelos/choclo.js: perfil(v) pasa a ser asimétrico y en ALTURA normalizada (panza a 0.30, punta a 0.60); FILAS reparte el alto de cada fila según el radio; posicionDe mide el radio a la altura real (tresbolillo incluido). Nuevos huecoDe(a, p) e Y_PELOS. grano-choclo acepta { a, p } y se esculpe a la medida de su hueco (superelipsoide n=2.7, color por vértice, conBorde).',
+      'tusa: alvéolos y tallo verde por vértice. hoja-choclo: la hoja se esculpe entera y se corta en bandas (normales continuas entre nudos), cuello + puntas, textura de venas (lienzo), una de cada dos tierna en vez de media vuelta blanca; se fueron los pelitos-hoja. pelos-choclo: tubos afinados con rizo y color por vértice.',
+      'nivel-feria: el penacho ya no se recoloca ni se escala (se iba más allá de la punta). nivel-maiz y feria pasan { a, p } al grano.',
+      'modelos/pintura.js: suavito(). Arveja con bultos en la cáscara y terciopelo; chochos, melloco, fréjol, mote, maní, quinua, queso, guarnición, bacalao y bichos con luz de borde.',
+      'main.js fichaBolsa(): aro de avance (bolsa-aro), pastilla de estado, bolsa--guia sólo en la primera sin estrenar; se fue .bolsa-barra. fanesca.css / design-system.css: despensa, bolsa, HUD y hojas.',
+      'herramientas/estudio.html: escena choclo-pelado y ?hojas=n. pruebas/estudio.mjs: variable Q para pasar parámetros.',
+    ],
+  },
   {
     v: '4.8.1',
     fecha: '2026-10-23',

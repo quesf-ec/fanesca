@@ -902,8 +902,9 @@ svg[width="0"] { width: 0; height: 0; }
 .hud-icono {
   flex: 0 0 auto; width: 36px; height: 36px;
   display: grid; place-items: center;
-  background: radial-gradient(circle at 50% 38%, rgba(255,244,226,.22), rgba(255,244,226,.06));
-  border: 1.5px solid var(--vidrio-borde); border-radius: 50%;
+  background: radial-gradient(circle at 50% 36%, #fff 0%, var(--crema-50) 55%, var(--crema-200) 96%);
+  border: 0; border-radius: 50%;
+  box-shadow: inset 0 -2px 4px rgba(42,26,18,.1);
 }
 .hud-icono svg { width: 76%; height: 76%; }
 .hud-centro-txt { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .2rem; }
@@ -913,7 +914,7 @@ svg[width="0"] { width: 0; height: 0; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .hud-barra-fila { display: flex; align-items: center; gap: .45rem; }
-.hud-barra-fila .meter { height: 7px; background: rgba(255,244,226,.16); box-shadow: none; }
+.hud-barra-fila .meter { height: 8px; border-radius: 99px; background: rgba(255,244,226,.16); box-shadow: inset 0 1px 2px rgba(0,0,0,.3); }
 .hud-centro .meter-fill { background: linear-gradient(90deg, var(--oro-400), var(--oro-200)); box-shadow: 0 0 10px rgba(255,211,106,.55); }
 .hud-pct {
   font-family: var(--font-display); font-weight: 800; font-size: var(--t-2xs);
@@ -1064,21 +1065,23 @@ svg[width="0"] { width: 0; height: 0; }
   justify-content: space-between;
   padding: 0 var(--sp-3);
 }
-.juego-controles--lados .ctrl { min-width: 3.6rem; }
+.juego-controles--lados .ctrl { min-width: 0; width: 62px; height: 62px; min-height: 0; padding: 0; border-radius: 50%; gap: .1rem; }
+.juego-controles--lados .ctrl-tip { letter-spacing: .02em; }
 
 /* ---- la pista: la única enseñanza del juego ---- */
 .juego-pista {
   position: absolute; left: 50%; transform: translateX(-50%) translateY(10px);
   bottom: calc(env(safe-area-inset-bottom) + var(--prep-ctrl-h) + var(--sp-4));
-  z-index: 4; width: max-content; max-width: 86%;
-  padding: .6rem 1.2rem;
+  z-index: 4; width: max-content; max-width: 88%;
+  padding: .65rem 1.15rem;
   font-family: var(--font-text); font-size: var(--t-sm); font-weight: 600; text-align: center; line-height: 1.4;
   color: var(--text-invert);
   background: var(--vidrio-oscuro);
-  border: 1.5px solid var(--vidrio-borde);
-  border-left: 4px solid var(--oro-400);
-  border-radius: var(--r-md);
-  box-shadow: var(--e-3);
+  /* un filo de oro parejo: la barra gruesa a la izquierda, con las
+     esquinas redondas, se leía como un corchete suelto */
+  border: 1.5px solid rgba(255,211,106,.42);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e-3), inset 0 1px 0 rgba(255,255,255,.08);
   -webkit-backdrop-filter: blur(var(--vidrio-blur)); backdrop-filter: blur(var(--vidrio-blur));
   opacity: 0; pointer-events: none;
   transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-spring);
@@ -1848,6 +1851,9 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
   cursor: pointer;
 }
 .mesa-escalera:active { transform: scale(.96); }
+/* se ve chica, pero el dedo la encuentra: el blanco llega a los 44px */
+.mesa-escalera { position: relative; }
+.mesa-escalera::after { content: ''; position: absolute; inset: -9px -6px; }
 /* la hoja de los platos: una fila por peldaño */
 .platos-lista { list-style: none; width: 100%; margin: 0; padding: 0; display: grid; gap: .35rem; }
 .plato-fila {
@@ -1864,7 +1870,7 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
 .plato-fila:not(.plato-fila--cerrada):active { transform: scale(.98); }
 .mesa-bolsas {
   display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: .45rem;
+  gap: .55rem;
 }
 .mesa-extras { padding: var(--sp-3) 0 var(--sp-2); }
 .mesa-niveles {
@@ -1875,76 +1881,119 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
 }
 
 /* LA FICHA DE UNA BOLSA. Cuatro estados que se leen sin leer:
-   cerrada (apagada, con candado), nueva (oro, «empieza aquí»),
-   en curso (barra), sabida (anillo verde y su ✓). */
+   cerrada (dormida, con su candadito), nueva (oro; sólo la primera
+   dice «empieza aquí»), en curso (el aro se va llenando) y completa
+   (aro entero, verde, con su ✓).
+
+   EL AVANCE ES EL ARO DEL ICONO. Antes era una rayita de 3px al pie
+   y un «3 / 5» diminuto: el icono —lo lindo de la ficha— medía 46px
+   y el estado había que buscarlo. Ahora el icono manda y el aro
+   cuenta cuánto falta de un vistazo. */
 .bolsa {
   position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-  gap: .18rem;
-  min-height: 96px;
-  padding: .45rem .3rem .5rem;
-  border-radius: var(--r-md);
+  gap: .22rem;
+  min-height: 118px;
+  padding: .6rem .3rem .55rem;
+  border-radius: var(--r-lg);
   /* CADA BOLSA ES UN PAPELITO CON LUZ. En la semana las fichas iban
      dentro de una hoja crema y podían ser transparentes; aquí flotan
      sobre la cocina de noche, así que la cara clara y la tinta oscura
      tienen que traerlas ellas o no se lee ni un nombre. */
   background: linear-gradient(180deg, var(--crema-50), var(--crema-100));
-  border: 1.5px solid var(--hairline);
-  box-shadow: var(--e-1);
+  border: 1.5px solid rgba(255,255,255,.7);
+  box-shadow: inset 0 -3px 0 rgba(42,26,18,.07), var(--e-2);
   font-family: inherit; text-align: center; color: var(--text);
   cursor: pointer; appearance: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  /* entran de a una, de arriba abajo. `backwards` y no `both`: una
+     animación que se queda puesta le gana al :active y la ficha
+     dejaría de hundirse bajo el dedo. */
+  animation: bolsa-entra .34s var(--ease-out) backwards;
 }
+@keyframes bolsa-entra { from { opacity: 0; transform: translateY(8px) scale(.96); } }
+.bolsa:nth-child(3n+2) { animation-delay: .03s; }
+.bolsa:nth-child(3n)   { animation-delay: .06s; }
+.bolsa:nth-child(n+4)  { animation-duration: .4s; }
+.bolsa:nth-child(n+10) { animation-duration: .46s; }
 .bolsa:active { transform: scale(.95); }
-.bolsa-ico {
-  flex: 0 0 auto;
-  width: 46px; height: 46px; padding: 5px;
+/* el aro: verde lo hecho, tinta suave lo que falta */
+.bolsa-aro {
+  position: relative; flex: 0 0 auto;
+  width: 66px; height: 66px; padding: 4px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 38%, #fff 0%, var(--crema-50) 55%, var(--crema-200) 92%);
-  box-shadow: inset 0 -3px 6px rgba(42,26,18,.08), var(--e-1);
+  background: conic-gradient(var(--hoja-500) calc(var(--p, 0) * 1%), rgba(42,26,18,.1) 0);
+}
+.bolsa-ico {
+  display: block;
+  width: 100%; height: 100%; padding: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 36%, #fff 0%, var(--crema-50) 55%, var(--crema-200) 96%);
+  box-shadow: inset 0 -3px 6px rgba(42,26,18,.08), 0 0 0 2px var(--crema-50), var(--e-1);
 }
 .bolsa-ico svg, .bolsa-ico .plate { width: 100%; height: 100%; }
 .bolsa-nombre {
-  font-family: var(--font-display); font-size: var(--t-2xs); font-weight: 700; line-height: 1.1;
+  font-family: var(--font-display); font-size: var(--t-xs); font-weight: 700; line-height: 1.1;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   overflow-wrap: anywhere;
 }
-.bolsa-pie { font-family: var(--font-display); font-size: var(--t-2xs); font-weight: 700; color: var(--text-muted); line-height: 1; }
-.bolsa-nuevo { color: var(--maiz-800); }
-.bolsa-barra {
-  position: absolute; left: .5rem; right: .5rem; bottom: .3rem;
-  height: 3px; border-radius: 99px; background: rgba(42,26,18,.12); overflow: hidden;
+.bolsa-pie { font-family: var(--font-display); font-size: var(--t-2xs); font-weight: 700; color: var(--text-muted); line-height: 1; margin-top: auto; }
+.bolsa-cuenta, .bolsa-nuevo {
+  display: inline-block; padding: .2rem .5rem; border-radius: var(--r-pill);
+  background: rgba(42,26,18,.07);
+  font-variant-numeric: tabular-nums;
 }
-.bolsa-barra i { display: block; height: 100%; background: var(--hoja-500); border-radius: 99px; }
-.bolsa-sello {
-  position: absolute; top: .25rem; right: .35rem;
-  font-size: .75rem; color: var(--hoja-500); font-weight: 800;
+.bolsa-cuenta, .bolsa-nuevo { white-space: nowrap; }
+/* en teléfonos angostos o bajitos la ficha se recoge: caben más
+   bolsas por pantalla y «empieza aquí» no se parte en dos */
+@media (max-width: 350px), (max-height: 680px) {
+  .bolsa { min-height: 104px; padding-top: .5rem; }
+  .bolsa-aro { width: 56px; height: 56px; }
+  .bolsa-cuenta, .bolsa-nuevo { padding: .2rem .38rem; }
 }
-.bolsa-candado { font-size: .8rem; filter: drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
+.bolsa-cuenta--completa { color: var(--hoja-600); background: rgba(93,181,90,.18); }
+.bolsa-nuevo { color: var(--maiz-800); background: rgba(244,185,66,.32); }
+/* el sello y el candado: una chapita en la esquina del icono */
+.bolsa-sello, .bolsa-candado {
+  position: absolute; right: -3px; bottom: -3px;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: .72rem; font-weight: 800; line-height: 1;
+  box-shadow: 0 0 0 2px var(--crema-50), var(--e-1);
+}
+.bolsa-sello { color: #fff; background: var(--hoja-500); }
+.bolsa-candado { font-size: .62rem; background: var(--noche-600); box-shadow: 0 0 0 2px var(--noche-700); }
 
-.bolsa--cerrada { opacity: .5; background: rgba(255,244,226,.14); border-color: rgba(255,244,226,.12); box-shadow: none; color: var(--crema-200); }
-.bolsa--cerrada .bolsa-ico { filter: grayscale(.9); opacity: .5; background: rgba(255,244,226,.1); box-shadow: none; }
-.bolsa--cerrada .bolsa-nombre { color: var(--crema-200); }
-.bolsa--sabida .bolsa-ico { box-shadow: inset 0 0 0 2.5px var(--hoja-500), var(--e-1); }
+/* CERRADA NO ES MUERTA. Antes era una losa gris al 50%: no se leía ni
+   qué ingrediente esperaba ahí, y quince de dieciocho así hacían del
+   menú un cementerio. Ahora es cristal de noche con el dibujo a media
+   luz: se ve qué viene, y se ve que todavía no. */
+.bolsa--cerrada {
+  background: linear-gradient(180deg, rgba(255,244,226,.1), rgba(255,244,226,.05));
+  border-color: var(--vidrio-borde); box-shadow: none; color: var(--crema-200);
+}
+.bolsa--cerrada { justify-content: center; gap: .35rem; }
+.bolsa--cerrada .bolsa-aro { background: rgba(255,244,226,.08); }
+.bolsa--cerrada .bolsa-ico { background: rgba(255,244,226,.1); box-shadow: none; }
+.bolsa--cerrada .bolsa-ico svg, .bolsa--cerrada .bolsa-ico .plate { filter: grayscale(.55) brightness(.92); opacity: .62; }
+.bolsa--cerrada .bolsa-nombre { color: var(--crema-300); }
 /* OJO CON LOS TINTES TRANSLÚCIDOS: encima de la cocina de noche un
    verde al 12% no aclara la ficha, la apaga — y el nombre en tinta
    oscura desaparecía justo en las bolsas terminadas. Los estados
    pintan SOBRE la cara clara, no en lugar de ella. */
 .bolsa--completa {
-  background: linear-gradient(180deg, #f2fbef, #e2f3dd);
-  border-color: rgba(93,181,90,.55);
+  background: linear-gradient(180deg, #f4fbf0, #e1f2db);
+  border-color: rgba(165,224,143,.9);
 }
-.bolsa--completa .bolsa-ico { box-shadow: inset 0 0 0 3px var(--hoja-500), var(--e-1); }
-/* la recién abierta llama: es la única noticia de esta pantalla */
+/* la recién abierta: oro. Y sólo la que guía, late */
 .bolsa--nueva {
-  background: linear-gradient(180deg, #fff3d6, #ffe6ab);
-  border-color: rgba(224,161,44,.65);
+  background: linear-gradient(180deg, #fff6dd, #ffe9b4);
+  border-color: var(--oro-200);
 }
-.bolsa--nueva .bolsa-nuevo { color: var(--maiz-800); }
-.bolsa--nueva .bolsa-ico {
-  box-shadow: inset 0 0 0 2.5px var(--oro-400), 0 0 0 4px rgba(244,185,66,.22), var(--e-2);
-  animation: late-suave 1.8s var(--ease-in-out) infinite;
-}
+.bolsa--nueva .bolsa-aro { background: rgba(224,161,44,.35); }
+.bolsa--guia { box-shadow: inset 0 -3px 0 rgba(184,120,28,.16), var(--glow-oro), var(--e-2); }
+.bolsa--guia .bolsa-aro { background: var(--oro-400); animation: late-suave 1.8s var(--ease-in-out) infinite; }
+.bolsa--guia .bolsa-nuevo { color: #fff; background: var(--cobre-500); }
 
 /* ============================================================
    DENTRO DE UNA BOLSA — los niveles en fila.
@@ -1979,7 +2028,7 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
   mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 6px), transparent 100%);
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 6px), transparent 100%);
 }
-.bolsa-niveles { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .35rem; }
+.bolsa-niveles { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45rem; }
 .bolsa-niveles li { display: flex; }
 .bolsa-niveles .renglon {
   flex: 1 1 auto;
@@ -1989,22 +2038,39 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
   box-shadow: var(--e-1);
   color: var(--text);
   flex-direction: row; align-items: center; justify-content: flex-start;
-  gap: .6rem;
-  min-height: 52px;
-  padding: .45rem .7rem .45rem .5rem;
+  gap: .65rem;
+  min-height: 58px;
+  padding: .45rem .85rem .45rem .5rem;
+  border-color: rgba(255,255,255,.7);
+  box-shadow: inset 0 -3px 0 rgba(42,26,18,.06), var(--e-1);
   text-align: left;
+  animation: bolsa-entra .34s var(--ease-out) backwards;
 }
+.bolsa-niveles li:nth-child(2) .renglon { animation-delay: .03s; }
+.bolsa-niveles li:nth-child(3) .renglon { animation-delay: .06s; }
+.bolsa-niveles li:nth-child(4) .renglon { animation-delay: .09s; }
+.bolsa-niveles li:nth-child(n+5) .renglon { animation-delay: .12s; }
+/* EL NÚMERO ES UNA CHAPITA: verde si el peldaño está hecho, oro el
+   que toca, apagada el que falta. Antes era un número a mano suelto y
+   el estado sólo lo decían las cucharas del otro extremo. */
 .bolsa-niveles .renglon-num {
   position: static;
-  flex: 0 0 auto; width: 1.6rem; text-align: center;
-  font-size: 1.15rem;
+  flex: 0 0 auto; width: 2.2rem; height: 2.2rem;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: rgba(42,26,18,.07);
+  font-size: 1.2rem;
 }
+.bolsa-niveles .renglon--hecho .renglon-num { background: rgba(93,181,90,.2); color: var(--hoja-600); }
+.bolsa-niveles .renglon--siguiente .renglon-num { background: var(--oro-400); color: var(--maiz-800); }
+.bolsa-niveles .renglon--siguiente { background: linear-gradient(180deg, #fff6dd, #ffe9b4); }
+.bolsa-niveles .renglon--bloqueado .renglon-num { background: rgba(255,244,226,.1); }
 .bolsa-niveles .renglon-txt { flex: 1 1 auto; flex-direction: row; align-items: center; gap: .4rem; }
 .bolsa-niveles .renglon-nombre { -webkit-line-clamp: 1; font-size: var(--t-xs); }
 .bolsa-niveles .renglon-estado { position: static; flex: 0 0 auto; }
 .bolsa-niveles .renglon--bloqueado {
-  background: rgba(255,244,226,.14); border-color: rgba(255,244,226,.12);
-  box-shadow: none; color: var(--crema-200); opacity: .6;
+  background: linear-gradient(180deg, rgba(255,244,226,.1), rgba(255,244,226,.05)); border-color: var(--vidrio-borde);
+  box-shadow: none; color: var(--crema-200); opacity: .75;
 }
 .bolsa-niveles .renglon--bloqueado .renglon-num { color: var(--crema-200); }
 .bolsa-niveles .renglon--foco { transform: none; animation: none; box-shadow: 0 0 0 2px var(--oro-400), var(--e-2); }
@@ -2026,11 +2092,12 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
 }
 .reto {
   display: flex; align-items: center; gap: .6rem;
-  padding: .5rem .7rem;
-  margin-bottom: .35rem;
+  padding: .6rem .8rem;
+  margin-bottom: .4rem;
+  min-height: 54px;
   border-radius: var(--r-md);
-  background: rgba(255,244,226,.09);
-  border: 1.5px solid rgba(255,244,226,.12);
+  background: linear-gradient(180deg, rgba(255,244,226,.1), rgba(255,244,226,.06));
+  border: 1.5px solid var(--vidrio-borde);
   color: rgba(255,244,226,.78);
 }
 .reto-ico { flex: 0 0 auto; font-size: 1.2rem; line-height: 1; filter: grayscale(.55) opacity(.75); }
@@ -2042,9 +2109,13 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
    sólo el ganado lo cambia por el ✓. */
 .reto-marca {
   flex: 0 0 auto;
+  padding: .2rem .5rem; border-radius: var(--r-pill);
+  background: rgba(255,244,226,.08);
   font-family: var(--font-display); font-size: var(--t-2xs); font-weight: 800;
-  color: rgba(255,244,226,.55);
+  font-variant-numeric: tabular-nums;
+  color: rgba(255,244,226,.7);
 }
+.reto--hecho .reto-marca { background: none; padding: 0; }
 .reto--hecho {
   background: linear-gradient(180deg, #f2fbef, #e2f3dd);
   border-color: rgba(93,181,90,.55);
@@ -2056,9 +2127,11 @@ html[data-letra="grande"] .dock-principal small { white-space: normal; line-heig
 /* la medalla en la ficha de la despensa: sustituye al ✓, que ya no
    era noticia en una bolsa terminada */
 .bolsa-medallas {
-  position: absolute; top: .25rem; right: .3rem;
-  font-family: var(--font-display); font-size: .62rem; font-weight: 800;
-  color: var(--maiz-800);
+  position: absolute; top: .3rem; right: .3rem;
+  padding: .12rem .34rem .12rem .2rem; border-radius: var(--r-pill);
+  font-family: var(--font-display); font-size: .66rem; font-weight: 800; line-height: 1.1;
+  color: var(--maiz-800); background: var(--oro-200);
+  box-shadow: 0 1px 2px rgba(42,26,18,.18);
 }
 .bolsa--cerrada .bolsa-medallas { display: none; }
 

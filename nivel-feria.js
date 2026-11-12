@@ -145,7 +145,7 @@ function nuevosGranos(clase) {
   for (let a = -1; a <= 1; a++) {
     for (let p = 2; p < P - 2; p++) {
       const { th, r, h } = posicionDe(((a % A) + A) % A, p);
-      const grano = api.pieza('grano-choclo', { madurez: clase.madurez, variante: a * 7 + p * 3 });
+      const grano = api.pieza('grano-choclo', { madurez: clase.madurez, a: ((a % A) + A) % A, p, variante: a * 7 + p * 3 });
       grano.position.set(Math.sin(th) * (r + 0.03), h, Math.cos(th) * (r + 0.03));
       grano.rotation.y = th;
       g.add(grano);
@@ -166,16 +166,13 @@ function nuevoChoclo(clase, senal, i) {
     hojas.push(hoja);
     g.add(hoja.pivot);
   }
-  /* EL PENACHO VA EN LA PUNTA DE LA HOJA, no en la del grano. Puesto
-     a lo alto del choclo (LARGO/2) le quedaba treinta centímetros por
-     dentro del manojo, y las hebras salían atravesando las hojas: en
-     pantalla no se leían como pelos sino como rayones sobre el
-     choclo. La hoja llega hasta BASE_HOJA + LARGO_HOJA; ahí, y algo
-     más corto, es un mechón asomando por la punta. */
+  /* EL PENACHO SALE POR EL CUELLO DE LAS HOJAS, que es donde el modelo
+     ya lo pone. Antes se recolocaba y se achicaba aquí, y como el
+     achique era desde el centro del choclo el mechón se iba flotando
+     más allá de la punta: las hebras se leían como rayones sueltos en
+     la tabla. Y va a tamaño entero: su color es una de las señales. */
   const pelos = api.pieza('pelos-choclo');
   tintar(pelos, senal.pelo);
-  pelos.position.y = BASE_HOJA + LARGO_HOJA - 0.10;
-  pelos.scale.setScalar(0.72);
   g.add(pelos);
 
   /* ACOSTADO A LO ANCHO, y esto costó una captura de pantalla

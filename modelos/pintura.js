@@ -177,3 +177,17 @@ export function bultosEnFila(geo, opts = {}) {
   geo.computeVertexNormals();
   return geo;
 }
+
+/* ---------- suavito ----------
+   La luz de borde de las habas, en su versión de casa: un canto tibio
+   y flojo que redondea cualquier pieza y la deja «de felpa» sin
+   cambiarle el color de frente. Envuelve el material que ya tiene la
+   pieza (Lambert o Phong, con o sin textura). Para un borde con color
+   propio —el verde claro de una vaina— se le pasa `color`. */
+export function suavito(mat, opts = {}) {
+  return conBorde(mat, {
+    color: opts.color || '#fff1d2',
+    fuerza: opts.fuerza != null ? opts.fuerza : 0.2,
+    potencia: opts.potencia != null ? opts.potencia : 2.3,
+  });
+}

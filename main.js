@@ -1225,6 +1225,10 @@ function tocable(el, fn) {
      · en curso — el gesto ya lo sabes, quedan peldaños
      · sabida   — todos sus niveles hechos, con su sello
    ============================================================ */
+/* la primera bolsa abierta y sin estrenar: la que lleva el «empieza aquí» */
+function primeraNueva() {
+  return ORDEN_BOLSAS.find(id => bolsaAbierta(id) && !nivelesBolsa(id).some(n => estaListo(n.id)));
+}
 function fichaBolsa(bolsa) {
   const ing = porId(bolsa);
   const niveles = nivelesBolsa(bolsa);
@@ -1246,16 +1250,27 @@ function fichaBolsa(bolsa) {
     + (!abierta ? ' bolsa--cerrada' : '')
     + (completa ? ' bolsa--completa' : (sabe ? ' bolsa--sabida' : ''))
     + (nueva ? ' bolsa--nueva' : '');
+  /* EL AVANCE ES UN ARO ALREDEDOR DEL ICONO, no una rayita al pie: se
+     lee de un vistazo cuánto falta sin gastar un renglón. Y sólo UNA
+     ficha dice «empieza aquí» —la primera sin estrenar—; las demás
+     nuevas dicen «nueva» y no gritan las dieciocho a la vez. */
+  const guia = nueva && bolsa === primeraNueva();
+  const pie = !abierta
+    ? ''
+    : (nueva
+      ? `<span class="bolsa-nuevo">${guia ? 'empieza aquí' : 'nueva'}</span>`
+      : (completa
+        ? `<span class="bolsa-cuenta bolsa-cuenta--completa">completa</span>`
+        : `<span class="bolsa-cuenta">${hechos} de ${niveles.length}</span>`));
+  if (guia) b.classList.add('bolsa--guia');
   b.innerHTML = `
-    <span class="bolsa-ico" aria-hidden="true">${icono(ing ? ing.icono : 'fanesca')}</span>
+    <span class="bolsa-aro" style="--p:${abierta ? pct : 0}" aria-hidden="true">
+      <span class="bolsa-ico">${icono(ing ? ing.icono : 'fanesca')}</span>
+      ${!abierta ? '<span class="bolsa-candado">🔒</span>' : (completa ? '<span class="bolsa-sello">✓</span>' : '')}
+    </span>
     <span class="bolsa-nombre">${ing ? ing.nombre : bolsa}</span>
-    <span class="bolsa-pie">${!abierta
-      ? '<span class="bolsa-candado" aria-hidden="true">🔒</span>'
-      : (nueva
-        ? '<span class="bolsa-nuevo">empieza aquí</span>'
-        : `<span class="bolsa-cuenta">${hechos} / ${niveles.length}</span>`)}</span>
-    ${abierta && hechos > 0 ? `<span class="bolsa-barra" aria-hidden="true"><i style="width:${pct}%"></i></span>` : ''}
-    ${medallas ? `<span class="bolsa-medallas" aria-hidden="true">🏅${medallas}</span>` : (completa ? '<span class="bolsa-sello" aria-hidden="true">✓</span>' : '')}`;
+    ${pie ? `<span class="bolsa-pie">${pie}</span>` : ''}
+    ${medallas ? `<span class="bolsa-medallas" aria-hidden="true">🏅${medallas}</span>` : ''}`;
   b.setAttribute('aria-label', `${ing ? ing.nombre : bolsa}${abierta
     ? ` · ${hechos} de ${niveles.length} niveles${medallas ? ` · ${medallas} ${medallas === 1 ? 'reto' : 'retos'}` : ''}`
     : ' (cerrada)'}`);

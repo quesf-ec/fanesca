@@ -366,10 +366,11 @@
 .stat {
   flex: 1; min-width: 0;
   display: flex; flex-direction: column; align-items: center; gap: .1rem;
-  padding: .6rem .5rem;
-  background: rgba(42, 26, 18, .05);
+  padding: .65rem .5rem .6rem;
+  background: rgba(255, 255, 255, .55);
   border: 1.5px solid var(--hairline);
   border-radius: var(--r-md);
+  box-shadow: inset 0 -3px 0 rgba(42, 26, 18, .05);
 }
 .stat-n {
   font-family: var(--font-display); font-size: var(--t-xl); font-weight: 800; line-height: 1;
@@ -445,7 +446,7 @@
   color: var(--text);
   background: linear-gradient(180deg, var(--crema-50), var(--crema-100));
   border-radius: var(--r-xl) var(--r-xl) 0 0;
-  box-shadow: var(--e-4);
+  box-shadow: var(--e-4), inset 0 1.5px 0 rgba(255, 255, 255, .9);
   padding: var(--sp-6) var(--sp-5) calc(env(safe-area-inset-bottom) + var(--sp-5));
   animation: sheet-in var(--dur-slow) var(--ease-spring) both;
   max-height: calc(100dvh - env(safe-area-inset-top) - 24px);

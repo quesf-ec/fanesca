@@ -14,7 +14,8 @@
   se pone el modelo delante, armado COMO LO ARMA SU NIVEL, para
   mirarlo de cerca y comparar antes y después.
 
-    estudio.html?escena=arveja | choclo | choclo-medio | pelos
+    estudio.html?escena=arveja | choclo | choclo-medio | choclo-pelado | pelos
+                &hojas=n                      (cuántas hojas trae el choclo)
                 &cam=x,y,z&mira=x,y,z&fov=n   (opcional)
 
   Cuando termina de pintar deja window.listo = true (para Playwright).
@@ -31,13 +32,15 @@
 <script type="module">
 import * as THREE from 'three';
 import { pieza, parte, construirCocina, ALTO_TABLA } from '../modelos/index.js';
-import { A, P, posicionDe, BASE_HOJA, HOJAS, NUDOS } from '../modelos/choclo.js';
+import { A, P, posicionDe, BASE_HOJA, HOJAS as HOJAS_MODELO, NUDOS } from '../modelos/choclo.js';
 import { POR_VAINA, PASO_ARVEJA, VAINA, ARVEJA_R, perfilVaina } from '../modelos/arveja.js';
 
 const MESA_Y = 0.96;
 const q = new URLSearchParams(location.search);
 const escena = q.get('escena') || 'arveja';
 const vec = (s) => s && s.split(',').map(Number);
+/* cuántas hojas trae el choclo del estudio: los niveles reparten 5, 6, 8, 10 o 12 */
+const HOJAS = +(q.get('hojas') || HOJAS_MODELO);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio || 1);
@@ -84,12 +87,12 @@ function choclo(peladas = 0) {
   g.add(pieza('tusa', THREE, { madurez: 'tierno' }));
   for (let a = 0; a < A; a++) for (let p = 0; p < P; p++) {
     const { th, r, h } = posicionDe(a, p);
-    const gr = pieza('grano-choclo', THREE, { madurez: 'tierno', punta: p === 0 || p === P - 1, variante: a * 7 + p * 3 });
+    const gr = pieza('grano-choclo', THREE, { madurez: 'tierno', punta: p === 0 || p === P - 1, a, p, variante: a * 7 + p * 3 });
     gr.position.set(Math.sin(th) * (r + 0.03), h, Math.cos(th) * (r + 0.03));
     gr.rotation.y = th;
     g.add(gr);
   }
-  for (let i = 0; i < HOJAS; i++) {
+  for (let i = 0; i < (peladas < 0 ? 0 : HOJAS); i++) {
     const pivot = new THREE.Group();
     pivot.rotation.y = (i / HOJAS) * Math.PI * 2;
     pivot.position.y = BASE_HOJA;
@@ -102,7 +105,7 @@ function choclo(peladas = 0) {
     }
     g.add(pivot);
   }
-  if (!peladas || peladas < HOJAS) g.add(pieza('pelos-choclo', THREE));
+  if (peladas >= 0) g.add(pieza('pelos-choclo', THREE));
   return g;
 }
 
@@ -119,8 +122,8 @@ if (escena === 'arveja') {
     scene.add(a);
   }
   cam = [0.12, 2.05, 1.85]; mira = [0.05, 1.1, 0.48]; fov = 30;
-} else if (escena === 'choclo' || escena === 'choclo-medio' || escena === 'pelos') {
-  const c = choclo(escena === 'choclo-medio' ? 3 : 0);
+} else if (escena === 'choclo' || escena === 'choclo-medio' || escena === 'choclo-pelado' || escena === 'pelos') {
+  const c = choclo(escena === 'choclo-medio' ? 3 : escena === 'choclo-pelado' ? -1 : 0);
   c.position.set(0, MESA_Y + 1.25, 0.12);
   c.rotation.x = 0.1;
   scene.add(c);

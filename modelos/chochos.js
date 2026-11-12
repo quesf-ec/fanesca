@@ -15,7 +15,7 @@
 import { registrar } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { abollar, formaVariada } from './organico.js';
-import { pintar, conBorde } from './pintura.js';
+import { pintar, conBorde, suavito } from './pintura.js';
 
 const acotar01 = (v) => Math.max(0, Math.min(1, v));
 
@@ -48,14 +48,15 @@ registrar('chocho', (THREE, opts = {}) => {
      pareja al final del vuelo; con el tamaño en mesh.scale, en el
      último cuarto del salto se inflaba diez veces. */
   const sombra = new THREE.Color(COMIDA.chocho_pepa_sombra), luz = new THREE.Color(COMIDA.chocho_pepa);
-  const geoP = formaVariada('chocho-pepa2', 4, v, (k) => {
+  const geoP = formaVariada('chocho-pepa3', 4, v, (k) => {
     const p = pintar(THREE, baseChocho(THREE, k).clone(), (c, i, x, y) => {
-      c.copy(sombra).lerp(luz, Math.pow(acotar01((y + 1) / 2), 0.9));
+      c.copy(sombra).lerp(luz, Math.pow(acotar01((y + 1.25) / 2), 0.8));
     });
-    p.scale(0.1, 0.062, 0.088);
+    /* gordita: una almohadita, no una moneda */
+    p.scale(0.1, 0.07, 0.09);
     return p;
   });
-  const pepa = new THREE.Mesh(geoP, mate(THREE, '#ffffff', { vertexColors: true }));
+  const pepa = new THREE.Mesh(geoP, suavito(mate(THREE, '#ffffff', { vertexColors: true }), { color: '#fff6c8', fuerza: 0.26 }));
   pepa.name = 'pepa';
 
   /* LA PIEL EN SALMUERA: casi transparente al centro, lechosa en el
@@ -63,13 +64,13 @@ registrar('chocho', (THREE, opts = {}) => {
      brillo, y el chocho se leía como galleta seca — lo apetitoso del
      chocho es justo que está mojado. Sin escribir profundidad: es una
      película, no una cáscara. */
-  const geoPiel = formaVariada('chocho-piel2', 4, v, (k) => baseChocho(THREE, k).clone().scale(0.112, 0.072, 0.098));
+  const geoPiel = formaVariada('chocho-piel3', 4, v, (k) => baseChocho(THREE, k).clone().scale(0.108, 0.078, 0.097));
   const piel = new THREE.Mesh(geoPiel, conBorde(
     new THREE.MeshPhongMaterial({ color: COMIDA.chocho_piel, shininess: 28, specular: '#7a6e55', transparent: true, depthWrite: false }),
     /* el centro algo lechoso y no del todo transparente: con la piel
        casi invisible la pepa salía dorada, y el chocho que se compra es
        PÁLIDO — la pepa se adivina, no se exhibe */
-    { color: COMIDA.chocho_piel_borde, fuerza: 0.3, potencia: 2.0, alfa: [0.42, 0.9] }));
+    { color: COMIDA.chocho_piel_borde, fuerza: 0.3, potencia: 2.0, alfa: [0.4, 0.78] }));
   piel.name = 'piel';
   piel.userData.ignorar = true;
 

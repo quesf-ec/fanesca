@@ -14,7 +14,7 @@
 import { registrar } from './registro.js';
 import { brillante } from './paleta.js';
 import { abollar, forma, formaVariada } from './organico.js';
-import { pintar, sstep, ruido3 } from './pintura.js';
+import { pintar, sstep, ruido3, suavito } from './pintura.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
    Viven aquí mientras tanto para no pisar a quien edita la paleta.
@@ -63,7 +63,7 @@ registrar('garbanzo', (THREE, opts = {}) => {
   g.name = 'garbanzo';
   const k = ((opts.variante || 0) % 4 + 4) % 4;
   const geoP = formaVariada('garbanzo-pepa-v', 4, k, (kk) => geoPepa(THREE, kk));
-  const pepa = new THREE.Mesh(geoP, brillante(THREE, '#ffffff', { vertexColors: true }));
+  const pepa = new THREE.Mesh(geoP, suavito(brillante(THREE, '#ffffff', { vertexColors: true }), { fuerza: 0.24 }));
   pepa.scale.set(0.085, 0.08, 0.082);
   pepa.name = 'pepa';
   /* la camisita: la piel remojada, holgada y a punto de soltarse */

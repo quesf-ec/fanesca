@@ -14,7 +14,7 @@
 import { registrar, pieza } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { abollar, formaVariada } from './organico.js';
-import { pintar, sstep, azarCon } from './pintura.js';
+import { pintar, sstep, azarCon, suavito } from './pintura.js';
 import { COLORES as AGUA, materialAgua, superficieAgua, pared } from './quinua.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
@@ -34,8 +34,8 @@ const COLORES = {
    forma y la sombra de la base ya se lee mote, aunque la flor mida dos
    píxeles en el teléfono. El tamaño va horneado (0.05). */
 function geoMote(THREE, k) {
-  return formaVariada('grano-mote-v', 3, k, (v) => {
-    const gg = new THREE.SphereGeometry(1, 10, 8);
+  return formaVariada('grano-mote-v2', 3, k, (v) => {
+    const gg = new THREE.SphereGeometry(1, 12, 9);
     const gp = gg.attributes.position;
     for (let i = 0; i < gp.count; i++) {
       let X = gp.getX(i), Y = gp.getY(i);
@@ -48,7 +48,7 @@ function geoMote(THREE, k) {
       gp.setXYZ(i, X, Y, Z * 1.05);
     }
     gg.computeVertexNormals();
-    abollar(gg, { fuerza: 0.05, escala: 2.4, semilla: 17 + v });
+    abollar(gg, { fuerza: 0.035, escala: 2.4, semilla: 17 + v });
     gg.scale(0.05, 0.05, 0.05);
     const marfil = new THREE.Color(COLORES.mote_marfil), corona = new THREE.Color(COLORES.mote_corona);
     const sombra = new THREE.Color(COLORES.mote_sombra), pico = new THREE.Color(COLORES.mote_pico);
@@ -64,7 +64,7 @@ function geoMote(THREE, k) {
    caldero) */
 registrar('grano-mote', (THREE, opts = {}) => {
   const k = opts.variante != null ? opts.variante : (Math.random() * 3) | 0;
-  const m = new THREE.Mesh(geoMote(THREE, k), mate(THREE, opts.limpio ? '#f7efd6' : COMIDA.mote, { vertexColors: true }));
+  const m = new THREE.Mesh(geoMote(THREE, k), suavito(mate(THREE, opts.limpio ? '#f7efd6' : COMIDA.mote, { vertexColors: true })));
   m.name = 'grano-mote';
   return m;
 });
@@ -88,7 +88,7 @@ registrar('batea-mote', (THREE, opts = {}) => {
   granos.name = 'granos';
   granos.position.y = 0.05;
   const N = 40;
-  const im = new THREE.InstancedMesh(geoMote(THREE, 0), mate(THREE, COMIDA.mote, { vertexColors: true }), N);
+  const im = new THREE.InstancedMesh(geoMote(THREE, 0), suavito(mate(THREE, COMIDA.mote, { vertexColors: true })), N);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), P = new THREE.Vector3(), E = new THREE.Vector3();
   const Eu = new THREE.Euler(), C = new THREE.Color();
   const az = azarCon(41);

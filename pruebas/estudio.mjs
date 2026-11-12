@@ -7,7 +7,8 @@
      node pruebas/estudio.mjs <carpeta> [escena ...]
           (por defecto: arveja choclo choclo-medio pelos)
 
-   Con compara.mjs se arma el antes y después. Variables: SITIO, CHROME. */
+   Con compara.mjs se arma el antes y después. Variables: SITIO, CHROME,
+   y Q para parámetros de más (Q="&hojas=5"; hay también choclo-pelado). */
 import { chromium } from 'playwright';
 import fs from 'fs';
 
@@ -26,7 +27,7 @@ p.on('pageerror', e => errs.push(e.message));
 p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
 const info = {};
 for (const e of ESCENAS) {
-  await p.goto(`${SITIO}/herramientas/estudio.html?escena=${e}`, { waitUntil: 'domcontentloaded' });
+  await p.goto(`${SITIO}/herramientas/estudio.html?escena=${e}${process.env.Q || ''}`, { waitUntil: 'domcontentloaded' });
   await p.waitForFunction(() => window.listo === true, null, { timeout: 60000 });
   await p.waitForTimeout(300);
   info[e] = await p.evaluate(() => { const i = window.estudio.renderer.info; return { calls: i.render.calls, tris: i.render.triangles }; });

@@ -6,7 +6,7 @@ presa de bacalao. Los niveles ya no dibujan nada — piden sus piezas
 por nombre y las colocan.
 
 ```js
-const g = api.pieza('grano-choclo', { madurez: 'tierno', punta: false });
+const g = api.pieza('grano-choclo', { madurez: 'tierno', a: 3, p: 4 });
 ```
 
 ## Por qué una pieza y no una escena
@@ -23,7 +23,9 @@ ve una pieza; el juego dice cuántas hay y dónde van.** Así se puede
 reesculpir el grano sin tocar una línea de lógica.
 
 La consecuencia es que algunas medidas viven con el modelo y no con
-el nivel (`A`, `P`, `PASO` en `choclo.js`; `N`, `GRUESO`, `R` en
+el nivel (`A`, `P`, `perfil`, `posicionDe` y `huecoDe` en `choclo.js` —el
+grano se pide con su sitio `{ a, p }` y sale a la medida de ese hueco,
+más chico hacia la punta—; `N`, `GRUESO`, `R` en
 `zapallo.js`). Es a propósito: la forma y las posiciones son lo
 mismo, y si estuvieran en dos sitios un día dejarían de coincidir.
 

@@ -21,7 +21,7 @@
 import { registrar } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { abollar, forma } from './organico.js';
-import { pintar, lienzo, azarCon } from './pintura.js';
+import { pintar, lienzo, azarCon, suavito } from './pintura.js';
 import { sombraBlob } from './utileria.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
@@ -166,7 +166,7 @@ registrar('presa-bacalao', (THREE) => {
   g.name = 'presa';
   const geo = geoLonja(THREE);
   /* material PROPIO por presa: el nivel le cambia el color al desalar */
-  const carne = new THREE.Mesh(geo, mate(THREE, CARNE_SALADA, { map: texturaLascas(THREE), vertexColors: true }));
+  const carne = new THREE.Mesh(geo, suavito(mate(THREE, CARNE_SALADA, { map: texturaLascas(THREE), vertexColors: true }), { fuerza: 0.18 }));
   carne.scale.set(0.31, 0.07, 0.2);
   carne.name = 'carne';
 

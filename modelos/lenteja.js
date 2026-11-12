@@ -24,7 +24,7 @@
 import { registrar } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { abollar, formaVariada } from './organico.js';
-import { pintar, sstep, ruido3 } from './pintura.js';
+import { pintar, sstep, ruido3, suavito } from './pintura.js';
 import { mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
@@ -83,7 +83,7 @@ registrar('lenteja', (THREE, opts = {}) => {
   g.name = 'lenteja';
   const geo = formaVariada('lenteja-lente', 5, opts.variante || 0, (k) =>
     pintarLente(THREE, geoLente(THREE, k, k + 17), COLORES.lenteja_bases[k], k));
-  const m = new THREE.Mesh(geo, mate(THREE, '#ffffff', { vertexColors: true }));
+  const m = new THREE.Mesh(geo, suavito(mate(THREE, '#ffffff', { vertexColors: true }), { color: '#ffe2b0', fuerza: 0.26 }));
   m.scale.set(0.058, 0.024, 0.058);
   m.name = 'cuerpo';
   g.add(m);
@@ -144,7 +144,7 @@ registrar('piedra', (THREE, opts = {}) => {
   g.name = 'piedra';
   /* angulosa: la piedra no es redonda, y eso es lo que la delata */
   const geo = formaVariada('piedra-tallada', 4, opts.variante || 0, (k) => geoPiedra(THREE, k));
-  const m = new THREE.Mesh(geo, mate(THREE, '#ffffff', { vertexColors: true }));
+  const m = new THREE.Mesh(geo, suavito(mate(THREE, '#ffffff', { vertexColors: true }), { color: '#e8e4da', fuerza: 0.14 }));
   m.scale.set(0.055, 0.034, 0.05);
   m.name = 'cuerpo';
   g.add(m);

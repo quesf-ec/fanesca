@@ -19,7 +19,7 @@
 import { registrar, pieza } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { abollar, curvar, forma, formaVariada } from './organico.js';
-import { pintar, lienzo, azarCon } from './pintura.js';
+import { pintar, lienzo, azarCon, suavito } from './pintura.js';
 import { sombraBlob } from './utileria.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
@@ -209,9 +209,9 @@ registrar('maduro', (THREE, opts = {}) => {
       c.setRGB(v, v * 0.9, v * 0.78);
     });
   });
-  const t = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+  const t = new THREE.Mesh(geo, suavito(new THREE.MeshPhongMaterial({
     color: COMIDA.maduro, vertexColors: true, shininess: 22, specular: COLORES.maduro_brillo,
-  }));
+  }), { color: '#ffe9a8', fuerza: 0.22 }));
   t.scale.set(0.24, 0.05, 0.13);
   t.name = 'tajada';
   g.add(t);
@@ -236,7 +236,7 @@ registrar('empanadita', (THREE) => {
     s.computeVertexNormals();
     return uvPlano(abollar(s, { fuerza: 0.05, escala: 4, semilla: 9 }));
   });
-  const cuerpo = new THREE.Mesh(geo, mate(THREE, COLORES.empanadita_masa, { map: texturaEmpanada(THREE) }));
+  const cuerpo = new THREE.Mesh(geo, suavito(mate(THREE, COLORES.empanadita_masa, { map: texturaEmpanada(THREE) })));
   cuerpo.scale.set(0.17, 0.085, 0.13);
   cuerpo.position.z = -0.03;
   cuerpo.name = 'cuerpo';

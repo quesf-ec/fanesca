@@ -30,7 +30,7 @@ import { registrar, parte, partes } from './registro.js';
 import { COMIDA, mate, token } from './paleta.js';
 import { ojitos } from './utileria.js';
 import { forma } from './organico.js';
-import { pintar } from './pintura.js';
+import { pintar, suavito } from './pintura.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 /* ---------- COLORES NUEVOS (de paso: van a paleta.js) ----------
@@ -81,8 +81,8 @@ registrar('gusano', (THREE, opts = {}) => {
   const k = opts.escala || 1;
   const eje = opts.eje || 'z';
   const segmentos = opts.segmentos || 5;
-  const claro = mate(THREE, opts.color || COMIDA.gusano);
-  const oscuro = mate(THREE, opts.color2 || COMIDA.gusano_oscuro);
+  const claro = suavito(mate(THREE, opts.color || COMIDA.gusano), { fuerza: 0.26 });
+  const oscuro = suavito(mate(THREE, opts.color2 || COMIDA.gusano_oscuro), { fuerza: 0.26 });
 
   const obj = new THREE.Group();
   obj.name = 'gusano';
@@ -99,7 +99,7 @@ registrar('gusano', (THREE, opts = {}) => {
   const subida = [0.025, 0.012];
   for (let i = 0; i < segmentos; i++) {
     const s = new THREE.Mesh(
-      new THREE.SphereGeometry((0.062 - i * 0.005) * k, 9, 7),
+      new THREE.SphereGeometry((0.062 - i * 0.005) * k, 14, 10),
       i % 2 ? oscuro : claro
     );
     const alza = (subida[i] || 0) * k;
@@ -185,8 +185,8 @@ registrar('gorgojo', (THREE, opts = {}) => {
   }));
   const elitros = [-1, 1].map((s, i) => {
     const r = 0.072 * k;
-    const geo = forma(`elitro:${s}:${k}`, () => {
-      const g = new THREE.SphereGeometry(r, 12, 9, s < 0 ? -Math.PI / 2 : Math.PI / 2, Math.PI, 0, Math.PI / 2);
+    const geo = forma(`elitro2:${s}:${k}`, () => {
+      const g = new THREE.SphereGeometry(r, 14, 10, s < 0 ? -Math.PI / 2 : Math.PI / 2, Math.PI, 0, Math.PI / 2);
       return pintar(THREE, g, (c, j, x, y) => {
         const v = Math.min(1.1, 0.6 + 0.5 * (y / r));
         c.setRGB(v, v, v);
@@ -202,8 +202,8 @@ registrar('gorgojo', (THREE, opts = {}) => {
 
   /* la cabeza, un 20 % más grande y más arriba: proporción tierna */
   const cabeza = new THREE.Mesh(
-    new THREE.SphereGeometry(0.042 * 1.2 * k, 10, 8),
-    mate(THREE, COLORES.gorgojo_cabeza)
+    new THREE.SphereGeometry(0.042 * 1.2 * k, 14, 10),
+    suavito(mate(THREE, COLORES.gorgojo_cabeza), { fuerza: 0.22 })
   );
   cabeza.position.set(0, 0.017 * k, 0.086 * k);
   cabeza.name = 'cabeza';
@@ -244,15 +244,15 @@ registrar('mosca', (THREE, opts = {}) => {
   obj.name = 'mosca';
 
   const cuerpo = new THREE.Mesh(
-    new THREE.SphereGeometry(0.055 * k, 10, 8),
-    mate(THREE, COMIDA.mosca_cuerpo)
+    new THREE.SphereGeometry(0.055 * k, 14, 10),
+    suavito(mate(THREE, COMIDA.mosca_cuerpo), { color: '#cfd8ff', fuerza: 0.3 })
   );
   cuerpo.scale.set(0.75, 0.7, 1.25);
   cuerpo.name = 'cuerpo';
 
   const cabeza = new THREE.Mesh(
-    new THREE.SphereGeometry(0.038 * k, 10, 8),
-    mate(THREE, COMIDA.mosca_cabeza)
+    new THREE.SphereGeometry(0.038 * k, 14, 10),
+    suavito(mate(THREE, COMIDA.mosca_cabeza), { color: '#cfd8ff', fuerza: 0.3 })
   );
   cabeza.position.z = 0.06 * k;
   cabeza.name = 'cabeza';

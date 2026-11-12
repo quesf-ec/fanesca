@@ -20,7 +20,7 @@
 import { registrar, pieza } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { achatar, abollar, forma } from './organico.js';
-import { lienzo, azarCon } from './pintura.js';
+import { lienzo, azarCon, suavito } from './pintura.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
    Viven aquí mientras tanto para no pisar a quien edita la paleta. */
@@ -291,9 +291,9 @@ registrar('batea-quinua', (THREE, opts = {}) => {
 registrar('grano-quinua', (THREE, opts = {}) => {
   const g = new THREE.Group();
   g.name = 'grano-quinua';
-  const geo = forma('grano-quinua', () =>
-    achatar(new THREE.SphereGeometry(1, 8, 6), { desde: -0.45, dureza: 0.55 }));
-  const cuerpo = new THREE.Mesh(geo, mate(THREE, opts.limpio ? COMIDA.quinua_limpia : COMIDA.quinua));
+  const geo = forma('grano-quinua2', () =>
+    achatar(new THREE.SphereGeometry(1, 10, 7), { desde: -0.45, dureza: 0.55 }));
+  const cuerpo = new THREE.Mesh(geo, suavito(mate(THREE, opts.limpio ? COMIDA.quinua_limpia : COMIDA.quinua)));
   cuerpo.scale.set(0.032, 0.018, 0.032);
   cuerpo.name = 'cuerpo';
   /* el germen: el anillito que le da la vuelta al grano y que es lo

@@ -16,7 +16,7 @@
 import { registrar } from './registro.js';
 import { COMIDA, mate, brillante } from './paleta.js';
 import { abollar, curvar, formaVariada, forma } from './organico.js';
-import { lienzo, azarCon } from './pintura.js';
+import { lienzo, azarCon, suavito } from './pintura.js';
 
 export const POR_VAINA = 6;
 export const PASO_GRANO = 0.128;
@@ -103,7 +103,7 @@ registrar('vaina-frejol', (THREE) => {
     abollar(g, { fuerza: 0.01, escala: 5.5, semilla: 4 });
     return curvar(g, { eje: 'y', hacia: 'z', k: 0.55 });
   });
-  const cuerpo = new THREE.Mesh(geoC, mate(THREE, '#ffffff', { map: texturaVainaFrejol(THREE) }));
+  const cuerpo = new THREE.Mesh(geoC, suavito(mate(THREE, '#ffffff', { map: texturaVainaFrejol(THREE) }), { color: '#fff3d0', fuerza: 0.24 }));
   cuerpo.rotation.z = Math.PI / 2;
   cuerpo.name = 'cuerpo';
   v.add(cuerpo);
@@ -120,7 +120,7 @@ registrar('vaina-frejol', (THREE) => {
   }
 
   /* el rabito, en la punta del arco */
-  const rabo = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.016, 0.09, 6), mate(THREE, COMIDA.rabo_frejol));
+  const rabo = new THREE.Mesh(new THREE.CapsuleGeometry(0.013, 0.07, 3, 8), mate(THREE, COMIDA.rabo_frejol));
   rabo.rotation.z = Math.PI / 2.3;
   rabo.position.set(-0.44, 0.03, 0.09);
   rabo.name = 'rabo';
@@ -137,13 +137,13 @@ registrar('vaina-frejol', (THREE) => {
 registrar('grano-frejol', (THREE, opts = {}) => {
   const g = new THREE.Group();
   g.name = 'grano';
-  const geo = formaVariada('grano-frejol2', 4, opts.variante || 0, (k) =>
+  const geo = formaVariada('grano-frejol3', 4, opts.variante || 0, (k) =>
     curvar(
-      abollar(new THREE.SphereGeometry(1, 16, 12), { fuerza: 0.05, escala: 2.1, semilla: k + 11 }),
+      abollar(new THREE.SphereGeometry(1, 18, 12), { fuerza: 0.035, escala: 2.1, semilla: k + 11 }),
       { eje: 'x', hacia: 'z', k: 0.2 },
     ));
-  const cuerpo = new THREE.Mesh(geo, brillante(THREE, '#ffffff',
-    { map: texturaGranoFrejol(THREE), shininess: 14, specular: '#3a2a2a' }));
+  const cuerpo = new THREE.Mesh(geo, suavito(brillante(THREE, '#ffffff',
+    { map: texturaGranoFrejol(THREE), shininess: 14, specular: '#3a2a2a' }), { color: '#ffd6dc', fuerza: 0.26 }));
   cuerpo.scale.set(0.062, 0.05, 0.052);
   cuerpo.name = 'cuerpo';
   const raya = new THREE.Mesh(forma('ojo-frejol', () => new THREE.SphereGeometry(1, 8, 6)), mate(THREE, COMIDA.frejol_ojo));

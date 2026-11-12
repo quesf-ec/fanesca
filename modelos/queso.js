@@ -21,7 +21,7 @@
 import { registrar } from './registro.js';
 import { COMIDA, mate } from './paleta.js';
 import { abollar, forma, formaVariada } from './organico.js';
-import { pintar, lienzo, azarCon } from './pintura.js';
+import { pintar, lienzo, azarCon, suavito } from './pintura.js';
 
 /* COLORES NUEVOS — de paso: van a mudarse a COMIDA en paleta.js.
    Viven aquí mientras tanto para no pisar a quien edita la paleta. */
@@ -150,10 +150,10 @@ registrar('bloque-queso', (THREE) => {
 });
 
 registrar('miga-queso', (THREE, opts = {}) => {
-  const geo = formaVariada('queso-miga', 5, opts.variante || 0, (k) =>
-    abollar(new THREE.SphereGeometry(1, 9, 7), { fuerza: 0.2, escala: 1.8, semilla: k + 11 }));
+  const geo = formaVariada('queso-miga2', 5, opts.variante || 0, (k) =>
+    abollar(new THREE.SphereGeometry(1, 11, 8), { fuerza: 0.14, escala: 1.8, semilla: k + 11 }));
   /* a 0.07 la cuajada no se ve: basta el color del bloque */
-  const m = new THREE.Mesh(geo, mate(THREE, COLORES.queso_bloque));
+  const m = new THREE.Mesh(geo, suavito(mate(THREE, COLORES.queso_bloque), { color: '#ffffff', fuerza: 0.16 }));
   m.scale.setScalar(0.07 + (opts.variante % 3) * 0.012);
   m.name = 'miga-queso';
   return m;
